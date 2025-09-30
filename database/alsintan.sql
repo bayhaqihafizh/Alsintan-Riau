@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Sep 30, 2025 at 10:07 AM
+-- Generation Time: Sep 30, 2025 at 07:21 PM
 -- Server version: 10.4.19-MariaDB
 -- PHP Version: 8.0.7
 
@@ -43,22 +43,66 @@ INSERT INTO `admin` (`id`, `username`, `password`) VALUES
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `alat`
+--
+
+CREATE TABLE `alat` (
+  `id_alat` int(11) NOT NULL,
+  `nama_alat` varchar(100) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data for table `alat`
+--
+
+INSERT INTO `alat` (`id_alat`, `nama_alat`) VALUES
+(1, 'TR4'),
+(2, 'Penggilingan Beras(RMU)'),
+(3, 'TR2'),
+(4, 'Pengering'),
+(5, 'Mesin Panen'),
+(6, 'Mesin Pompa Air(Inci)'),
+(7, 'Kultivator'),
+(8, 'TR2 Rotary'),
+(9, 'Crawler dengan rantai besi'),
+(10, 'Alat semai benih dan Tanam'),
+(11, 'Mesin Potong Rumput');
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `alsintan`
 --
 
 CREATE TABLE `alsintan` (
   `id` int(11) NOT NULL,
   `id_desa` int(11) NOT NULL,
-  `nama_kelompok` varchar(50) NOT NULL,
-  `nama_alat` varchar(50) NOT NULL,
-  `merek` varchar(100) DEFAULT NULL,
-  `jenis` varchar(100) NOT NULL,
+  `id_kelompok` int(11) DEFAULT NULL,
+  `id_alat` int(11) DEFAULT NULL,
+  `id_merek` int(11) DEFAULT NULL,
+  `id_jenis` int(11) DEFAULT NULL,
   `jumlah` int(11) NOT NULL,
   `tahun` int(4) NOT NULL,
   `kondisi` enum('Baik','Rusak Ringan','Rusak Berat') NOT NULL,
   `foto` varchar(255) DEFAULT NULL,
   `keterangan` text DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data for table `alsintan`
+--
+
+INSERT INTO `alsintan` (`id`, `id_desa`, `id_kelompok`, `id_alat`, `id_merek`, `id_jenis`, `jumlah`, `tahun`, `kondisi`, `foto`, `keterangan`) VALUES
+(26, 1471020012, 1, 1, NULL, 1, 3, 2023, 'Baik', 'traktor.jpg', '...'),
+(27, 1471020001, 2, 2, NULL, NULL, 3, 2020, 'Baik', 'traktor.jpg', '...'),
+(28, 1471020011, 3, 3, 1, 13, 5, 2024, 'Rusak Ringan', 'traktor.jpg', '...'),
+(29, 1471020004, 4, 4, NULL, 11, 7, 2022, 'Baik', 'traktor.jpg', '...'),
+(30, 1471020007, 4, 1, NULL, 2, 4, 2023, 'Rusak Berat', 'traktor.jpg', '...'),
+(31, 1473010006, 5, 5, NULL, 9, 6, 2020, 'Rusak Ringan', 'traktor.jpg', '...'),
+(32, 1473010007, 5, 6, NULL, NULL, 4, 2023, 'Baik', 'traktor.jpg', '...'),
+(33, 1473010001, 1, 1, NULL, 1, 8, 2021, 'Baik', 'traktor.jpg', '...'),
+(34, 1473010008, 5, 3, 2, 13, 7, 2023, 'Rusak Ringan', 'traktor.jpg', '...'),
+(36, 1408022003, 6, 8, 0, 0, 2, 2025, 'Baik', 'traktor.jpg', '...');
 
 -- --------------------------------------------------------
 
@@ -1958,6 +2002,37 @@ INSERT INTO `desa` (`id`, `id_kecamatan`, `nama_desa`) VALUES
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `jenis`
+--
+
+CREATE TABLE `jenis` (
+  `id_jenis` int(11) NOT NULL,
+  `nama_jenis` varchar(100) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data for table `jenis`
+--
+
+INSERT INTO `jenis` (`id_jenis`, `nama_jenis`) VALUES
+(1, 'Bajak singkal piringan'),
+(2, 'Rotavator (Rotary)'),
+(3, 'Bajak singkal'),
+(4, 'Rotary'),
+(5, 'Mesin pengisi benih di tray'),
+(6, 'Walks Transplanter(tipe berjalan)'),
+(7, 'Ride Transplanter(tipe dikendarai)'),
+(8, 'Combine Harvester'),
+(9, 'Mini Combine Harvester(Mico/Tomcat)'),
+(10, 'Lantai jemur bangunan pengering(Dome)'),
+(11, 'Pengering padi tipe kotak(Box Drayer)'),
+(12, 'Bajak singkal tunggal'),
+(13, 'Glebek'),
+(14, 'Garu');
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `kabupaten`
 --
 
@@ -1982,7 +2057,7 @@ INSERT INTO `kabupaten` (`id`, `nama_kabupaten`) VALUES
 (1409, 'KABUPATEN ROKAN HILIR'),
 (1410, 'KABUPATEN KEPULAUAN MERANTI'),
 (1471, 'KOTA PEKANBARU'),
-(1473, 'KOTA D U M A I');
+(1473, 'KOTA DUMAI');
 
 -- --------------------------------------------------------
 
@@ -2171,6 +2246,51 @@ INSERT INTO `kecamatan` (`id`, `id_kabupaten`, `nama_kecamatan`) VALUES
 (1473030, 1473, 'DUMAI TIMUR'),
 (1473031, 1473, 'DUMAI KOTA');
 
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `kelompok`
+--
+
+CREATE TABLE `kelompok` (
+  `id_kelompok` int(11) NOT NULL,
+  `nama_kelompok` varchar(100) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data for table `kelompok`
+--
+
+INSERT INTO `kelompok` (`id_kelompok`, `nama_kelompok`) VALUES
+(1, 'Brigade Alsintan'),
+(2, 'Petani(Pribadi)'),
+(3, 'TNI'),
+(4, 'UPJA'),
+(5, 'Gapoktan'),
+(6, 'Brigade Pangan'),
+(7, 'Poktan');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `merek`
+--
+
+CREATE TABLE `merek` (
+  `id_merek` int(11) NOT NULL,
+  `nama_merek` varchar(100) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data for table `merek`
+--
+
+INSERT INTO `merek` (`id_merek`, `nama_merek`) VALUES
+(1, 'G 1000'),
+(2, 'Quick'),
+(3, 'Kubota'),
+(4, 'Yanmar');
+
 --
 -- Indexes for dumped tables
 --
@@ -2181,6 +2301,12 @@ INSERT INTO `kecamatan` (`id`, `id_kabupaten`, `nama_kecamatan`) VALUES
 ALTER TABLE `admin`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `username` (`username`);
+
+--
+-- Indexes for table `alat`
+--
+ALTER TABLE `alat`
+  ADD PRIMARY KEY (`id_alat`);
 
 --
 -- Indexes for table `alsintan`
@@ -2197,6 +2323,12 @@ ALTER TABLE `desa`
   ADD KEY `fk_kecamatan` (`id_kecamatan`);
 
 --
+-- Indexes for table `jenis`
+--
+ALTER TABLE `jenis`
+  ADD PRIMARY KEY (`id_jenis`);
+
+--
 -- Indexes for table `kabupaten`
 --
 ALTER TABLE `kabupaten`
@@ -2210,6 +2342,18 @@ ALTER TABLE `kecamatan`
   ADD KEY `fk_kabupaten` (`id_kabupaten`);
 
 --
+-- Indexes for table `kelompok`
+--
+ALTER TABLE `kelompok`
+  ADD PRIMARY KEY (`id_kelompok`);
+
+--
+-- Indexes for table `merek`
+--
+ALTER TABLE `merek`
+  ADD PRIMARY KEY (`id_merek`);
+
+--
 -- AUTO_INCREMENT for dumped tables
 --
 
@@ -2220,10 +2364,16 @@ ALTER TABLE `admin`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
+-- AUTO_INCREMENT for table `alat`
+--
+ALTER TABLE `alat`
+  MODIFY `id_alat` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+
+--
 -- AUTO_INCREMENT for table `alsintan`
 --
 ALTER TABLE `alsintan`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=26;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=37;
 
 --
 -- AUTO_INCREMENT for table `desa`
@@ -2232,10 +2382,28 @@ ALTER TABLE `desa`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1473031006;
 
 --
+-- AUTO_INCREMENT for table `jenis`
+--
+ALTER TABLE `jenis`
+  MODIFY `id_jenis` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
+
+--
 -- AUTO_INCREMENT for table `kecamatan`
 --
 ALTER TABLE `kecamatan`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1473032;
+
+--
+-- AUTO_INCREMENT for table `kelompok`
+--
+ALTER TABLE `kelompok`
+  MODIFY `id_kelompok` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+
+--
+-- AUTO_INCREMENT for table `merek`
+--
+ALTER TABLE `merek`
+  MODIFY `id_merek` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- Constraints for dumped tables

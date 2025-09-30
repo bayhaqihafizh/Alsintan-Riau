@@ -4,9 +4,8 @@ if (!isset($_SESSION['admin'])) {
     header('Location: login.php');
     exit;
 }
-include "../koneksi/koneksi.php"; 
+include "../koneksi/koneksi.php";
 ?>
-
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -73,12 +72,11 @@ include "../koneksi/koneksi.php";
 </nav>
 
 <div class="container mt-4">
-    <h4>Selamat datang, <?= $_SESSION['admin']; ?>!</h4>
+    <h4>Selamat datang, <?php echo htmlspecialchars($_SESSION['admin']); ?>!</h4>
     <p>Silakan kelola data alsintan di sini.</p>
 
     <a href="alsintan_form.php" class="btn btn-success mb-3">+ Input Data Alsintan</a>
 
-    <!-- hilangkan .table-responsive supaya tidak ada scroll horizontal -->
     <table class="table table-bordered table-striped align-middle text-center w-100">
         <thead>
             <tr>
@@ -101,51 +99,82 @@ include "../koneksi/koneksi.php";
         <tbody>
         <?php
             $no = 1;
-            $sql = "SELECT a.*, d.nama_desa, k.nama_kecamatan, kab.nama_kabupaten
+            // Query sudah JOIN ke tabel referensi lalu beri alias AS agar field tetap konsisten
+            $sql = "SELECT a.*,
+                           d.nama_desa,
+                           k.nama_kecamatan,
+                           kab.nama_kabupaten,
+                           kl.nama_kelompok AS nama_kelompok,
+                           al.nama_alat     AS nama_alat,
+                           m.nama_merek     AS nama_merek,
+                           j.nama_jenis     AS nama_jenis
                     FROM alsintan a
                     INNER JOIN desa d ON a.id_desa = d.id
                     INNER JOIN kecamatan k ON d.id_kecamatan = k.id
                     INNER JOIN kabupaten kab ON k.id_kabupaten = kab.id
+                    LEFT JOIN kelompok kl ON a.id_kelompok = kl.id_kelompok
+                    LEFT JOIN alat al ON a.id_alat = al.id_alat
+                    LEFT JOIN merek m ON a.id_merek = m.id_merek
+                    LEFT JOIN jenis j ON a.id_jenis = j.id_jenis
                     ORDER BY a.id DESC";
+
             $result = mysqli_query($koneksi, $sql) or die("Query error: " . mysqli_error($koneksi));
 
-            if (mysqli_num_rows($result) > 0) {
+            if ($result && mysqli_num_rows($result) > 0) {
                 while ($row = mysqli_fetch_assoc($result)) {
-                    echo "<tr>
-                        <td>".$no++."</td>
-                        <td>".htmlspecialchars($row['nama_kabupaten'])."</td>
-                        <td>".htmlspecialchars($row['nama_kecamatan'])."</td>
-                        <td>".htmlspecialchars($row['nama_desa'])."</td>
-                        <td>".htmlspecialchars($row['nama_kelompok'])."</td>
-                        <td><strong>".htmlspecialchars($row['nama_alat'])."</strong></td>
-                        <td>".htmlspecialchars($row['merek'] ?? '-')."</td>
-                        <td>".htmlspecialchars($row['jenis'] ?? '-')."</td>
-                        <td><span class='badge bg-primary'>".(int)$row['jumlah']."</span></td>
-                        <td>".$row['tahun']."</td>
-                        <td>";
-                    if ($row['kondisi'] === "Baik") {
-                        echo "<span class='badge bg-success'>Baik</span>";
-                    } elseif ($row['kondisi'] === "Rusak Ringan") {
-                        echo "<span class='badge bg-warning text-dark'>Rusak Ringan</span>";
-                    } elseif ($row['kondisi'] === "Rusak Berat") {
-                        echo "<span class='badge bg-danger'>Rusak Berat</span>";
-                    } else {
-                        echo "<span class='badge bg-secondary'>-</span>";
-                    }
-                    echo "</td>
-                        <td>".htmlspecialchars($row['keterangan'] ?? '-')."</td>
-                        <td>";
-                    if (!empty($row['foto'])) {
-                        echo "<a href='#' data-bs-toggle='modal' data-bs-target='#fotoModal".$row['id']."'>".$row['foto']."</a>
-                        <div class='modal fade' id='fotoModal".$row['id']."' tabindex='-1'>
+                    // Siapkan value aman
+                    $nama_kab   = htmlspecialchars($row['nama_kabupaten'] ?? '-');
+                    $nama_kec   = htmlspecialchars($row['nama_kecamatan'] ?? '-');
+                    $nama_desa  = htmlspecialchars($row['nama_desa'] ?? '-');
+                    $nama_kel   = htmlspecialchars($row['nama_kelompok'] ?? '-');
+                    $nama_alat  = htmlspecialchars($row['nama_alat'] ?? '-');
+                    $merek      = htmlspecialchars($row['nama_merek'] ?? '-');
+                    $jenis      = htmlspecialchars($row['nama_jenis'] ?? '-');
+                    $jumlah     = (int)($row['jumlah'] ?? 0);
+                    $tahun      = htmlspecialchars($row['tahun'] ?? '-');
+                    $kondisi    = $row['kondisi'] ?? '-';
+                    $keterangan = htmlspecialchars($row['keterangan'] ?? '-');
+                    $foto       = htmlspecialchars($row['foto'] ?? '');
+                    $id         = (int)$row['id'];
+
+                    echo "<tr>";
+                    echo "<td>".$no++."</td>";
+                    echo "<td>".$nama_kab."</td>";
+                    echo "<td>".$nama_kec."</td>";
+                    echo "<td>".$nama_desa."</td>";
+                    echo "<td>".$nama_kel."</td>";
+                    echo "<td><strong>".$nama_alat."</strong></td>";
+                    echo "<td>".$merek."</td>";
+                    echo "<td>".$jenis."</td>";
+                    echo "<td><span class='badge bg-primary'>".$jumlah."</span></td>";
+                    echo "<td>".$tahun."</td>";
+                    echo "<td>";
+                        if ($kondisi === "Baik") {
+                            echo "<span class='badge bg-success'>Baik</span>";
+                        } elseif ($kondisi === "Rusak Ringan") {
+                            echo "<span class='badge bg-warning text-dark'>Rusak Ringan</span>";
+                        } elseif ($kondisi === "Rusak Berat") {
+                            echo "<span class='badge bg-danger'>Rusak Berat</span>";
+                        } else {
+                            echo "<span class='badge bg-secondary'>-</span>";
+                        }
+                    echo "</td>";
+                    echo "<td>".$keterangan."</td>";
+                    echo "<td>";
+                    if (!empty($foto)) {
+                        // link ke modal yang unik per id
+                        echo "<a href='#' data-bs-toggle='modal' data-bs-target='#fotoModal".$id."'>".$foto."</a>";
+
+                        echo "
+                        <div class='modal fade' id='fotoModal".$id."' tabindex='-1'>
                           <div class='modal-dialog modal-dialog-centered'>
                             <div class='modal-content'>
                               <div class='modal-header'>
-                                <h5 class='modal-title'>Foto: ".$row['foto']."</h5>
-                                <button type='button' class='btn-close' data-bs-dismiss='modal'></button>
+                                <h5 class='modal-title'>Foto: ".$foto."</h5>
+                                <button type='button' class='btn-close' data-bs-dismiss='modal' aria-label='Close'></button>
                               </div>
                               <div class='modal-body text-center'>
-                                <img src='../uploads/".$row['foto']."' class='img-fluid rounded shadow'>
+                                <img src='../uploads/".$foto."' class='img-fluid rounded shadow' alt='Foto'>
                               </div>
                             </div>
                           </div>
@@ -153,12 +182,12 @@ include "../koneksi/koneksi.php";
                     } else {
                         echo "-";
                     }
-                    echo "</td>
-                        <td>
-                            <a href='alsintan_edit.php?id=".$row['id']."' class='btn btn-sm btn-warning'>Edit</a>
-                            <a href='alsintan_delete.php?id=".$row['id']."' class='btn btn-sm btn-danger' onclick=\"return confirm('Yakin hapus data ini?');\">Delete</a>
-                        </td>
-                    </tr>";
+                    echo "</td>";
+                    echo "<td>
+                            <a href='alsintan_edit.php?id=".$id."' class='btn btn-sm btn-warning'>Edit</a>
+                            <a href='alsintan_delete.php?id=".$id."' class='btn btn-sm btn-danger' onclick=\"return confirm('Yakin hapus data ini?');\">Delete</a>
+                          </td>";
+                    echo "</tr>";
                 }
             } else {
                 echo "<tr><td colspan='14' class='text-center'>Belum ada data alsintan</td></tr>";

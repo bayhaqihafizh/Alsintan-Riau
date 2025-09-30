@@ -13,92 +13,109 @@ include "../koneksi/koneksi.php";
             <form action="simpan_alsintan.php" method="POST" enctype="multipart/form-data">
                 <div class="row">
                     <div class="col-md-6">
+                        <!-- Kabupaten - Kecamatan - Desa -->
                         <div class="mb-3">
                             <label class="form-label">Kabupaten</label>
-                            <select name="kabupaten" id="kabupaten" class="form-select">
+                            <select name="id_kabupaten" id="kabupaten" class="form-select" required>
                                 <option value="">-- Pilih Kabupaten --</option>
                             </select>
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Kecamatan</label>
-                            <select name="id_kecamatan" id="id_kecamatan" class="form-select">
+                            <select name="id_kecamatan" id="id_kecamatan" class="form-select" required>
                                 <option value="">-- Pilih Kecamatan --</option>
                             </select>
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Desa</label>
-                            <select name="id_desa" id="id_desa" class="form-select">
+                            <select name="id_desa" id="id_desa" class="form-select" required>
                                 <option value="">-- Pilih Desa --</option>
                             </select>
                         </div>
+
+                        <!-- Kelompok -->
                         <div class="mb-3">
-                            <label class="form-label">PJ(Penanggung Jawab)</label>
-                            <select name="nama_kelompok" class="form-select">
-                                <option value="Brigade Alsintan">Brigade Alsintan</option>
-                                <option value="TNI">TNI</option>
-                                <option value="Petani(Pribadi)">Petani(Pribadi)</option>
-                                <option value="Gapoktan">Gapoktan</option>
-                                <option value="Poktan">Poktan</option>
-                                <option value="UPJA">UPJA</option>
-                                <option value="Brigade Pangan">Brigade Pangan</option>
+                            <label class="form-label">PJ (Penanggung Jawab)</label>
+                            <select name="id_kelompok" class="form-select" required>
+                                <option value="">-- Pilih Kelompok --</option>
+                                <?php
+                                $q = mysqli_query($koneksi, "SELECT * FROM kelompok ORDER BY nama_kelompok");
+                                while ($row = mysqli_fetch_assoc($q)) {
+                                    echo "<option value='{$row['id_kelompok']}'>{$row['nama_kelompok']}</option>";
+                                }
+                                ?>
                             </select>
                         </div>
+
+                        <!-- Alat -->
                         <div class="mb-3">
                             <label class="form-label">Nama Alat</label>
-                            <select name="nama_alat" id="nama_alat" class="form-control" required>
+                            <select name="id_alat" id="id_alat" class="form-select" required>
                                 <option value="">-- Pilih Alat --</option>
-                                <option value="Kultivator">Kultivator</option>
-                                <option value="TR2">TR2</option>
-                                <option value="TR2 Rotary">TR2 Rotary</option>
-                                <option value="TR4">TR4</option>
-                                <option value="Crawler dengan rantai besi">Crawler dengan rantai besi</option>
-                                <option value="Alat semai benih dan Tanam">Alat semai benih dan Tanam</option>
-                                <option value="Mesin Panen">Mesin Panen</option>
-                                <option value="Pengering">Pengering</option>
-                                <option value="Mesin Pompa Air(Inci)">Mesin Pompa Air(Inci)</option>
-                                <option value="Mesin Potong Rumput">Mesin Potong Rumput</option>
-                                <option value="Penggilingan Beras(RMU)">Penggilingan Beras(RMU)</option>
+                                <?php
+                                $q = mysqli_query($koneksi, "SELECT * FROM alat ORDER BY nama_alat");
+                                while ($row = mysqli_fetch_assoc($q)) {
+                                    echo "<option value='{$row['id_alat']}'>{$row['nama_alat']}</option>";
+                                }
+                                ?>
                             </select>
                         </div>
 
-                        <!-- Field Merek (hidden by default, dropdown) -->
-                        <div class="mb-3" id="field_merek" style="display:none;">
+                        <!-- Merek -->
+                        <div class="mb-3" id="div_merek" style="display:none;">
                             <label class="form-label">Merek</label>
-                            <select name="merek" id="merek" class="form-control">
+                            <select name="id_merek" id="id_merek" class="form-select">
                                 <option value="">-- Pilih Merek --</option>
+                                <?php
+                                $q = mysqli_query($koneksi, "SELECT * FROM merek ORDER BY nama_merek");
+                                while ($row = mysqli_fetch_assoc($q)) {
+                                    echo "<option value='{$row['id_merek']}'>{$row['nama_merek']}</option>";
+                                }
+                                ?>
                             </select>
                         </div>
 
-                        <!-- Field Jenis (hidden by default, dropdown) -->
-                        <div class="mb-3" id="field_jenis" style="display:none;">
+                        <!-- Jenis -->
+                        <div class="mb-3" id="div_jenis" style="display:none;">
                             <label class="form-label">Jenis</label>
-                            <select name="jenis" id="jenis" class="form-control">
+                            <select name="id_jenis" id="id_jenis" class="form-select">
                                 <option value="">-- Pilih Jenis --</option>
+                                <?php
+                                $q = mysqli_query($koneksi, "SELECT * FROM jenis ORDER BY nama_jenis");
+                                while ($row = mysqli_fetch_assoc($q)) {
+                                    echo "<option value='{$row['id_jenis']}'>{$row['nama_jenis']}</option>";
+                                }
+                                ?>
                             </select>
                         </div>
                     </div>
 
                     <div class="col-md-6">
+                        <!-- Jumlah -->
                         <div class="mb-3">
                             <label class="form-label">Jumlah</label>
-                            <input type="number" name="jumlah" class="form-control">
+                            <input type="number" name="jumlah" class="form-control" required>
                         </div>
+                        <!-- Tahun -->
                         <div class="mb-3">
                             <label class="form-label">Tahun</label>
-                            <input type="number" name="tahun" min="2000" max="2099" class="form-control">
+                            <input type="number" name="tahun" min="2000" max="2099" class="form-control" required>
                         </div>
+                        <!-- Kondisi -->
                         <div class="mb-3">
                             <label class="form-label">Kondisi</label>
-                            <select name="kondisi" class="form-select">
+                            <select name="kondisi" class="form-select" required>
                                 <option value="Baik">Baik</option>
                                 <option value="Rusak Ringan">Rusak Ringan</option>
                                 <option value="Rusak Berat">Rusak Berat</option>
                             </select>
                         </div>
+                        <!-- Foto -->
                         <div class="mb-3">
                             <label class="form-label">Foto</label>
                             <input type="file" name="foto" class="form-control">
                         </div>
+                        <!-- Keterangan -->
                         <div class="mb-3">
                             <label class="form-label">Keterangan</label>
                             <textarea name="keterangan" class="form-control"></textarea>
@@ -118,7 +135,6 @@ include "../koneksi/koneksi.php";
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
 $(document).ready(function(){
-
     // Ajax Kabupaten - Kecamatan - Desa
     $.ajax({
         type: 'GET',
@@ -153,65 +169,27 @@ $(document).ready(function(){
         });
     });
 
-    // Pilihan jenis & merek
-    const options = {
-        "TR2": {
-            merek: ["G 1000", "Quick", "Kubota", "Yanmar"],
-            jenis: ["Bajak singkal tunggal", "Bajak singkal piringan", "Glebek", "Garu"]
-        },
-        "TR4": {
-            merek: [],
-            jenis: ["Bajak singkal piringan", "Rotavator (Rotary)"]
-        },
-        "Crawler dengan rantai besi": {
-            merek: [],
-            jenis: ["Bajak singkal", "Rotary"]
-        },
-        "Alat semai benih dan Tanam": {
-            merek: [],
-            jenis: ["Mesin pengisi benih di tray", "Walks Transplanter(tipe berjalan)", "Ride Transplanter(tipe dikendarai)", "Media semai(Tray)"]
-        },
-        "Mesin Panen": {
-            merek: [],
-            jenis: ["Combine Harvester", "Mini Combine Harvester(Mico/Tomcat)"]
-        },
-        "Pengering": {
-            merek: [],
-            jenis: ["Lantai jemur bangunan pengering(Dome)", "Pengering padi tipe kotak(Box Drayer)"]
+    // Aturan tampilkan/hilangkan Merek & Jenis
+    $('#id_alat').change(function(){
+        var id_alat = $(this).val();
+
+        // Default hide semua
+        $("#div_merek").hide();
+        $("#div_jenis").hide();
+
+        if(id_alat == "3"){ 
+            // TR2
+            $("#div_merek").show();
+            $("#div_jenis").show();
         }
-        // Tambahkan alat lain sesuai kebutuhan
-    };
-
-    // Atur tampil/hidden + required field merek & jenis
-    $("#nama_alat").change(function(){
-        var selected = $(this).val();
-
-        // Reset & hide
-        $("#field_merek").hide();
-        $("#field_jenis").hide();
-        $("#merek").prop("required", false).html("<option value=''>-- Pilih Merek --</option>");
-        $("#jenis").prop("required", false).html("<option value=''>-- Pilih Jenis --</option>");
-
-        // Kalau ada opsi di dalam object
-        if(options[selected]){
-            // cek merek
-            if(options[selected].merek.length > 0){
-                $("#field_merek").show();
-                $("#merek").prop("required", true);
-                options[selected].merek.forEach(function(item){
-                    $("#merek").append(new Option(item, item));
-                });
-            }
-            // cek jenis
-            if(options[selected].jenis.length > 0){
-                $("#field_jenis").show();
-                $("#jenis").prop("required", true);
-                options[selected].jenis.forEach(function(item){
-                    $("#jenis").append(new Option(item, item));
-                });
-            }
+        else if(["1","9","10","5","4"].includes(id_alat)){
+            // TR4, Crawler, Alat semai, Mesin Panen, Pengering
+            $("#div_jenis").show();
+        }
+        else if(["7","8","6","11","2"].includes(id_alat)){
+            // Kultivator, TR2 Rotary, Mesin Pompa Air, Mesin Potong Rumput, Penggilingan Beras
+            // tidak muncul apa-apa
         }
     });
 });
 </script>
-

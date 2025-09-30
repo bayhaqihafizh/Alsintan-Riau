@@ -1,7 +1,6 @@
 <?php
 include "../koneksi/koneksi.php";
 
-
 if (!isset($_GET['id'])) {
     header("Location: dashboard.php");
     exit;
@@ -9,29 +8,36 @@ if (!isset($_GET['id'])) {
 
 $id = $_GET['id'];
 
-
+// Ambil data utama
 $sql = "SELECT * FROM alsintan WHERE id='$id'";
 $result = mysqli_query($koneksi, $sql) or die("Query error: " . mysqli_error($koneksi));
-
 if (mysqli_num_rows($result) == 0) {
     echo "Data tidak ditemukan!";
     exit;
 }
-
 $data = mysqli_fetch_assoc($result);
+
+// --- Ambil pilihan dropdown dari tabel referensi ---
+$kelompok_q = mysqli_query($koneksi, "SELECT * FROM kelompok ORDER BY nama_kelompok");
+$alat_q     = mysqli_query($koneksi, "SELECT * FROM alat ORDER BY nama_alat");
+$merek_q    = mysqli_query($koneksi, "SELECT * FROM merek ORDER BY nama_merek");
+$jenis_q    = mysqli_query($koneksi, "SELECT * FROM jenis ORDER BY nama_jenis");
+
+
+
 
 
 if (isset($_POST['update'])) {
-    $nama_kelompok = $_POST['nama_kelompok'];
-    $nama_alat     = $_POST['nama_alat'];
-    $jenis         = $_POST['jenis'];
-    $jumlah        = $_POST['jumlah'];
-    $tahun         = $_POST['tahun'];
-    $kondisi       = $_POST['kondisi'];
-    $keterangan    = $_POST['keterangan'];
-    $foto_lama     = $_POST['foto_lama'];
+    $id_kelompok    = $_POST['id_kelompok'];
+    $id_alat        = $_POST['id_alat'];
+    $id_merek       = $_POST['id_merek'];
+    $id_jenis       = $_POST['id_jenis'];
+    $jumlah         = $_POST['jumlah'];
+    $tahun          = $_POST['tahun'];
+    $kondisi        = $_POST['kondisi'];
+    $keterangan     = $_POST['keterangan'];
+    $foto_lama      = $_POST['foto_lama'];
 
-    
     if (!empty($_FILES['foto']['name'])) {
         $targetDir = "../uploads/";
         $fileName = basename($_FILES["foto"]["name"]);
@@ -39,27 +45,27 @@ if (isset($_POST['update'])) {
 
         if (move_uploaded_file($_FILES["foto"]["tmp_name"], $targetFile)) {
             $foto = $fileName;
-            
             if (!empty($foto_lama) && file_exists("../uploads/" . $foto_lama)) {
                 unlink("../uploads/" . $foto_lama);
             }
         } else {
-            $foto = $foto_lama; 
+            $foto = $foto_lama;
         }
     } else {
-        $foto = $foto_lama; 
+        $foto = $foto_lama;
     }
 
     $sql_update = "UPDATE alsintan SET 
-                    nama_kelompok='$nama_kelompok',
-                    nama_alat='$nama_alat',
-                    jenis='$jenis',
-                    jumlah='$jumlah',
-                    tahun='$tahun',
-                    kondisi='$kondisi',
-                    keterangan='$keterangan',
-                    foto='$foto'
-                  WHERE id='$id'";
+                id_kelompok='$id_kelompok',
+                id_alat='$id_alat',
+                id_merek='$id_merek',
+                id_jenis='$id_jenis',
+                jumlah='$jumlah',
+                tahun='$tahun',
+                kondisi='$kondisi',
+                keterangan='$keterangan',
+                foto='$foto'
+              WHERE id='$id'";
 
     if (mysqli_query($koneksi, $sql_update)) {
         header("Location: dashboard.php");
@@ -88,27 +94,66 @@ if (isset($_POST['update'])) {
             <form method="post" enctype="multipart/form-data">
                 <div class="row">
                     <div class="col-md-6">
+                        <!-- Nama Kelompok -->
                         <div class="mb-3">
-                            <label class="form-label">Nama Kelompok</label>
-                            <input type="text" name="nama_kelompok" value="<?= $data['nama_kelompok']; ?>" class="form-control" required>
+                            <label class="form-label">PJ(Penanggung Jawab)</label>
+                            <select name="id_kelompok" class="form-control" required>
+                                <option value="">-- Pilih Kelompok --</option>
+                                <?php while ($row = mysqli_fetch_assoc($kelompok_q)) { ?>
+                                    <option value="<?= $row['id_kelompok']; ?>" 
+                                        <?= ($data['id_kelompok'] == $row['id_kelompok']) ? 'selected' : ''; ?>>
+                                        <?= $row['nama_kelompok']; ?>
+                                    </option>
+                                <?php } ?>
+                            </select>
                         </div>
+                        <!-- Nama Alat -->
                         <div class="mb-3">
                             <label class="form-label">Nama Alat</label>
-                            <input type="text" name="nama_alat" value="<?= $data['nama_alat']; ?>" class="form-control" required>
+                            <select name="id_alat" class="form-control" required>
+                                <option value="">-- Pilih Alat --</option>
+                                <?php while ($row = mysqli_fetch_assoc($alat_q)) { ?>
+                                    <option value="<?= $row['id_alat']; ?>" 
+                                        <?= ($data['id_alat'] == $row['id_alat']) ? 'selected' : ''; ?>>
+                                        <?= $row['nama_alat']; ?>
+                                    </option>
+                                <?php } ?>
+                            </select>
                         </div>
+
+                        <!-- Merek -->
                         <div class="mb-3">
                             <label class="form-label">Merek</label>
-                            <input type="text" name="merek" value="<?= $data['merek']; ?>" class="form-control" >
+                            <select name="id_merek" class="form-control">
+                                <option value="">-- Pilih Merek --</option>
+                                <?php while ($row = mysqli_fetch_assoc($merek_q)) { ?>
+                                    <option value="<?= $row['id_merek']; ?>" 
+                                        <?= ($data['id_merek'] == $row['id_merek']) ? 'selected' : ''; ?>>
+                                        <?= $row['nama_merek']; ?>
+                                    </option>
+                                <?php } ?>
+                            </select>
                         </div>
+
+                        <!-- Jenis -->
                         <div class="mb-3">
                             <label class="form-label">Jenis</label>
-                            <input type="text" name="jenis" value="<?= $data['jenis']; ?>" class="form-control" >
+                            <select name="id_jenis" class="form-control">
+                                <option value="">-- Pilih Jenis --</option>
+                                <?php while ($row = mysqli_fetch_assoc($jenis_q)) { ?>
+                                    <option value="<?= $row['id_jenis']; ?>" 
+                                        <?= ($data['id_jenis'] == $row['id_jenis']) ? 'selected' : ''; ?>>
+                                        <?= $row['nama_jenis']; ?>
+                                    </option>
+                                <?php } ?>
+                            </select>
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Jumlah</label>
                             <input type="number" name="jumlah" value="<?= $data['jumlah']; ?>" class="form-control" required>
                         </div>
                     </div>
+                    
                     <div class="col-md-6">
                         <div class="mb-3">
                             <label class="form-label">Tahun</label>

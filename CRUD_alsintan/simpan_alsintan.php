@@ -1,15 +1,15 @@
 <?php
 include "../koneksi/koneksi.php";
 
-$id_desa       = $_POST['id_desa'];
-$nama_kelompok = $_POST['nama_kelompok'];
-$nama_alat     = $_POST['nama_alat'];
-$merek         = isset($_POST['merek']) ? $_POST['merek'] : null; // tambah merek
-$jenis         = isset($_POST['jenis']) ? $_POST['jenis'] : null; // jenis bisa kosong
-$jumlah        = $_POST['jumlah'];
-$tahun         = $_POST['tahun'];
-$kondisi       = $_POST['kondisi'];
-$keterangan    = $_POST['keterangan'];
+$id_desa     = $_POST['id_desa'];
+$id_kelompok = $_POST['id_kelompok']; // dropdown kelompok
+$id_alat     = $_POST['id_alat'];     // dropdown alat
+$id_merek    = isset($_POST['id_merek']) ? $_POST['id_merek'] : null; 
+$id_jenis    = isset($_POST['id_jenis']) ? $_POST['id_jenis'] : null; 
+$jumlah      = $_POST['jumlah'];
+$tahun       = $_POST['tahun'];
+$kondisi     = $_POST['kondisi'];
+$keterangan  = $_POST['keterangan'];
 
 $foto = null;
 if (isset($_FILES['foto']) && $_FILES['foto']['error'] == 0) {
@@ -17,7 +17,8 @@ if (isset($_FILES['foto']) && $_FILES['foto']['error'] == 0) {
     if (!is_dir($target_dir)) {
         mkdir($target_dir, 0777, true);
     }
-    $foto = basename($_FILES["foto"]["name"]); // kasih prefix biar unik
+    // kasih prefix waktu biar unik
+    $foto =basename($_FILES["foto"]["name"]);
     $target_file = $target_dir . $foto;
 
     if (!move_uploaded_file($_FILES["foto"]["tmp_name"], $target_file)) {
@@ -25,18 +26,20 @@ if (isset($_FILES['foto']) && $_FILES['foto']['error'] == 0) {
     }
 }
 
-// Gunakan prepared statement biar lebih aman
+// INSERT pakai field yang baru
 $sql = "INSERT INTO alsintan 
-        (id_desa, nama_kelompok, nama_alat, merek, jenis, jumlah, tahun, kondisi, foto, keterangan) 
+        (id_desa, id_kelompok, id_alat, id_merek, id_jenis, jumlah, tahun, kondisi, foto, keterangan) 
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
 $stmt = mysqli_prepare($koneksi, $sql);
-mysqli_stmt_bind_param($stmt, "issssissss", 
+mysqli_stmt_bind_param(
+    $stmt, 
+    "iiiiisssss", 
     $id_desa, 
-    $nama_kelompok, 
-    $nama_alat, 
-    $merek, 
-    $jenis, 
+    $id_kelompok, 
+    $id_alat, 
+    $id_merek, 
+    $id_jenis, 
     $jumlah, 
     $tahun, 
     $kondisi, 
