@@ -1,19 +1,19 @@
 <?php
 include "koneksi/koneksi.php";
 
-
 $id_kabupaten = isset($_POST['kabupaten']) ? intval($_POST['kabupaten']) : 0;
 $id_kecamatan = isset($_POST['kecamatan']) ? intval($_POST['kecamatan']) : 0;
 $id_desa      = isset($_POST['desa']) ? intval($_POST['desa']) : 0;
 
-
-$sql = "SELECT a.*, d.nama_desa, k.nama_kecamatan, kab.nama_kabupaten
+// QUERY UTAMA: ambil data lengkap dengan relasi desa, kecamatan, kabupaten
+$sql = "SELECT a.id, a.nama_kelompok, a.nama_alat, a.merek, a.jenis, 
+               a.jumlah, a.tahun, a.kondisi, a.foto, a.keterangan,
+               d.nama_desa, k.nama_kecamatan, kab.nama_kabupaten
         FROM alsintan a
         INNER JOIN desa d ON a.id_desa = d.id
         INNER JOIN kecamatan k ON d.id_kecamatan = k.id
         INNER JOIN kabupaten kab ON k.id_kabupaten = kab.id
         WHERE 1=1";
-
 
 if ($id_desa > 0) {
     $sql .= " AND a.id_desa = '$id_desa'";
@@ -22,11 +22,13 @@ if ($id_desa > 0) {
 } elseif ($id_kabupaten > 0) {
     $sql .= " AND kab.id = '$id_kabupaten'";
 }
+
 $sql .= " ORDER BY kab.nama_kabupaten, k.nama_kecamatan, d.nama_desa, a.nama_alat";
 $result = mysqli_query($koneksi, $sql);
 
-
-$rank_sql = "SELECT kab.nama_kabupaten, k.nama_kecamatan, d.nama_desa, SUM(a.jumlah) AS total_alsintan
+// QUERY RANKING: total jumlah alsintan per desa
+$rank_sql = "SELECT kab.nama_kabupaten, k.nama_kecamatan, d.nama_desa, 
+                    SUM(a.jumlah) AS total_alsintan
              FROM alsintan a
              INNER JOIN desa d ON a.id_desa = d.id
              INNER JOIN kecamatan k ON d.id_kecamatan = k.id
@@ -35,6 +37,7 @@ $rank_sql = "SELECT kab.nama_kabupaten, k.nama_kecamatan, d.nama_desa, SUM(a.jum
              ORDER BY total_alsintan DESC";
 $rank_result = mysqli_query($koneksi, $rank_sql);
 
+// Data untuk Chart
 $chart_labels = $chart_values = [];
 if ($rank_result && mysqli_num_rows($rank_result) > 0) {
     while ($r = mysqli_fetch_assoc($rank_result)) {
@@ -43,6 +46,7 @@ if ($rank_result && mysqli_num_rows($rank_result) > 0) {
     }
 }
 
+// Statistik kondisi
 $totalAlsintan = mysqli_fetch_assoc(mysqli_query($koneksi, "SELECT SUM(jumlah) as total FROM alsintan"))['total'];
 $baik = mysqli_fetch_assoc(mysqli_query($koneksi, "SELECT SUM(jumlah) as total FROM alsintan WHERE kondisi='Baik'"))['total'];
 $rusakRingan = mysqli_fetch_assoc(mysqli_query($koneksi, "SELECT SUM(jumlah) as total FROM alsintan WHERE kondisi='Rusak Ringan'"))['total'];
@@ -64,7 +68,8 @@ $rusakBerat = mysqli_fetch_assoc(mysqli_query($koneksi, "SELECT SUM(jumlah) as t
     <div class="container-fluid">
       <a class="navbar-brand d-flex align-items-center" href="#">
         <img src="images/kementan.png" alt="Logo Kementan">
-        <span class="header-title">DATABASE ALSINTAN PROVINSI RIAU</span>
+        <span class="header-title">DATABASE ALSINTAN PROVINSI RIAU</span><br>
+        <span class="header-title">Balai Penerapan Modernisasi Pertanian (BRMP Riau)</span>
       </a>
     </div>
   </nav>

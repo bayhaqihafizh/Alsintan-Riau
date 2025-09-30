@@ -13,6 +13,7 @@
             <th>Desa</th>
             <th>Nama Kelompok</th>
             <th>Nama Alat</th>
+            <th>Merek</th>
             <th>Jenis</th>
             <th>Jumlah</th>
             <th>Tahun</th>
@@ -32,7 +33,8 @@
                 <td><?= htmlspecialchars($row['nama_desa']) ?></td>
                 <td><?= htmlspecialchars($row['nama_kelompok'] ?? '-') ?></td>
                 <td><strong><?= htmlspecialchars($row['nama_alat']) ?></strong></td>
-                <td><?= htmlspecialchars($row['jenis']) ?></td>
+                <td><?= htmlspecialchars($row['merek'] ?? '-') ?></td>
+                <td><?= htmlspecialchars($row['jenis'] ?? '-') ?></td>
                 <td class="text-center"><span class="badge bg-primary"><?= (int)$row['jumlah'] ?></span></td>
                 <td class="text-center"><?= htmlspecialchars($row['tahun']) ?></td>
                 <td>
@@ -40,11 +42,13 @@
                     <span class="badge bg-success">Baik</span>
                   <?php elseif ($row['kondisi'] === "Rusak Ringan"): ?>
                     <span class="badge bg-warning text-dark">Rusak Ringan</span>
-                  <?php else: ?>
+                  <?php elseif ($row['kondisi'] === "Rusak Berat"): ?>
                     <span class="badge bg-danger">Rusak Berat</span>
+                  <?php else: ?>
+                    <span class="badge bg-secondary">-</span>
                   <?php endif; ?>
                 </td>
-                <td><?= htmlspecialchars($row['keterangan']) ?></td>
+                <td><?= htmlspecialchars($row['keterangan'] ?? '-') ?></td>
                 <td class="text-center">
                   <?php if (!empty($row['foto'])): ?>
                     <a href="#"
@@ -60,7 +64,7 @@
               </tr>
             <?php endwhile; ?>
           <?php else: ?>
-            <tr><td colspan="12" class="text-center">Tidak ada data</td></tr>
+            <tr><td colspan="13" class="text-center">Tidak ada data</td></tr>
           <?php endif; ?>
         </tbody>
       </table>

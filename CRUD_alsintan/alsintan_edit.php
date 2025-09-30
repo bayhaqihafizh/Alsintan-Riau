@@ -97,8 +97,12 @@ if (isset($_POST['update'])) {
                             <input type="text" name="nama_alat" value="<?= $data['nama_alat']; ?>" class="form-control" required>
                         </div>
                         <div class="mb-3">
+                            <label class="form-label">Merek</label>
+                            <input type="text" name="merek" value="<?= $data['merek']; ?>" class="form-control" >
+                        </div>
+                        <div class="mb-3">
                             <label class="form-label">Jenis</label>
-                            <input type="text" name="jenis" value="<?= $data['jenis']; ?>" class="form-control" required>
+                            <input type="text" name="jenis" value="<?= $data['jenis']; ?>" class="form-control" >
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Jumlah</label>
